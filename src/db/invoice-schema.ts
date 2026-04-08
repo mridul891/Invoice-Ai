@@ -1,10 +1,5 @@
-import {
-    index,
-    pgTable,
-    text,
-    uuid,
-} from "drizzle-orm/pg-core";
-import { user } from "./auth-schema";
+import { index, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { user } from "../../auth-schema";
 
 export const businessDetails = pgTable("business_details", {
   id: uuid("id").primaryKey(),

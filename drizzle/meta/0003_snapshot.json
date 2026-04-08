@@ -1,6 +1,6 @@
 {
-	"id": "61e51a81-0045-40a4-ac6e-47fcb2c925d5",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "a90ce6c6-80df-47d2-abb6-9c056847e0c6",
+	"prevId": "5753d635-97ac-463d-a04d-d36c1ac8f295",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -245,6 +245,13 @@
 					"notNull": true,
 					"default": false
 				},
+				"is_onboarding_completed": {
+					"name": "is_onboarding_completed",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
+				},
 				"image": {
 					"name": "image",
 					"type": "text",
@@ -341,6 +348,116 @@
 				}
 			},
 			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.business_details": {
+			"name": "business_details",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"business_name": {
+					"name": "business_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"business_address": {
+					"name": "business_address",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"business_details_user_id_user_id_fk": {
+					"name": "business_details_user_id_user_id_fk",
+					"tableFrom": "business_details",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.business_fields": {
+			"name": "business_fields",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"business_details_id": {
+					"name": "business_details_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"field": {
+					"name": "field",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"value": {
+					"name": "value",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {
+				"business_fields_business_details_id_idx": {
+					"name": "business_fields_business_details_id_idx",
+					"columns": [
+						{
+							"expression": "business_details_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"business_fields_business_details_id_business_details_id_fk": {
+					"name": "business_fields_business_details_id_business_details_id_fk",
+					"tableFrom": "business_fields",
+					"tableTo": "business_details",
+					"columnsFrom": ["business_details_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},

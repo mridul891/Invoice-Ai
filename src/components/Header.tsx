@@ -5,7 +5,10 @@ export default function Header() {
 	return (
 		<div>
 			<div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3">
-				<Link href="/" className="flex shrink-0 items-center justify-center gap-3">
+				<Link
+					href="/"
+					className="flex shrink-0 items-center justify-center gap-3"
+				>
 					{/* <Image src={logo} alt="Logo" className="size-5 sm:size-6" /> */}
 					<span className="hidden h-full text-lg leading-none font-medium min-[400px]:block">
 						{SITE_TITLE}
