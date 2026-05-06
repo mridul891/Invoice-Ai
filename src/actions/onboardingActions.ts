@@ -1,16 +1,14 @@
 "use server";
 
 import { user } from "auth-schema";
-
 import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
-import { businessDetails, businessFields } from "@/db/invoice-schema";
-import { auth } from "@/lib/auth";
+import { businessesTable } from "@/db/business-schema";
 import {
 	OnboardingFormSchema,
 	type OnboardingFormSchemaType,
 } from "@/zod/schema";
 import { db } from "../index";
+import { getSession } from "./authActions";
 
 type ActionResult<T> =
 	| { success: true; message: string; data?: T }
@@ -18,8 +16,7 @@ type ActionResult<T> =
 
 export async function handleOnboarding(
 	rawData: OnboardingFormSchemaType,
-): Promise<ActionResult<{ businessDetailsId: string }>> {
-	// 1. Runtime input validation
+): Promise<ActionResult<{ businessId: string }>> {
 	const parsed = OnboardingFormSchema.safeParse(rawData);
 	if (!parsed.success) {
 		return {
@@ -30,15 +27,11 @@ export async function handleOnboarding(
 	}
 	const { businessName, businessAddress, businessFieldsArray } = parsed.data;
 
-	// 2. Auth check with forwarded headers (required in Next.js)
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
+	const session = await getSession();
 	if (!session?.user?.id) {
 		return { success: false, error: "Unauthorized", code: "UNAUTHORIZED" };
 	}
 
-	// 3. Guard: prevent re-onboarding
 	if (session.user.isOnboardingCompleted) {
 		return {
 			success: false,
@@ -48,29 +41,19 @@ export async function handleOnboarding(
 	}
 
 	const userId = session.user.id;
-	// const businessDetailsId = randomUUID().toString();
 
-	// 4. Wrap all writes in a single transaction (atomic)
+	const metadata = Object.fromEntries(
+		businessFieldsArray.map((field) => [field.label, field.value]),
+	);
+
 	try {
 		await db.transaction(async (tx) => {
-			const [inserted] = await tx
-				.insert(businessDetails)
-				.values({
-					userId,
-					businessName,
-					businessAddress,
-				})
-				.returning({ id: businessDetails.id });
-
-			if (businessFieldsArray.length > 0) {
-				await tx.insert(businessFields).values(
-					businessFieldsArray.map((field) => ({
-						businessDetailsId: inserted.id,
-						field: field.label,
-						value: field.value,
-					})),
-				);
-			}
+			await tx.insert(businessesTable).values({
+				ownerUserId: userId,
+				businessName,
+				businessAddress,
+				metadata,
+			});
 
 			await tx
 				.update(user)
@@ -78,7 +61,6 @@ export async function handleOnboarding(
 				.where(eq(user.id, userId));
 		});
 	} catch (err) {
-		// 5. Log server-side, return safe message to client
 		console.error("[handleOnboarding] DB transaction failed:", err);
 		return {
 			success: false,

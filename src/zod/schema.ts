@@ -18,5 +18,16 @@ export const OnboardingFormSchema = z.object({
 		.min(1, "Business fields are required."),
 });
 
+export const sendEmailSchema = z.object({
+	to: z.string().email("Invalid email address."),
+	clientName: z.string().min(1, "Client name is required."),
+	businessName: z.string().min(1, "Business name is required."),
+	invoiceNumber: z.string().min(1, "Invoice number is required."),
+	amount: z.number().min(0, "Amount must be greater than 0."),
+	dueDate: z.date().min(new Date(), "Due date must be in the future."),
+	viewLink: z.string().url("Invalid URL."),
+});
+
 export type FieldSchemaType = z.infer<typeof FieldSchema>;
 export type OnboardingFormSchemaType = z.infer<typeof OnboardingFormSchema>;
+export type SendEmailSchemaType = z.infer<typeof sendEmailSchema>;

@@ -1,12 +1,11 @@
-import { authClient } from "@/lib/auth-client";
+"use server";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
-export const handleSocialsignIn = async (provider: "google" | "github") => {
-	await authClient.signIn.social({
-		provider: provider,
-		callbackURL: "/invoices/create",
+export const getSession = async () => {
+	const session = await auth.api.getSession({
+		headers: await headers(),
 	});
-};
-
-export const handleLogout = async () => {
-	await authClient.signOut();
+	if (!session?.user) return null;
+	return session;
 };

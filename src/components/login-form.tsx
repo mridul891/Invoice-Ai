@@ -1,7 +1,7 @@
 "use client";
 import { GoogleLogoIcon } from "@phosphor-icons/react";
 import Link from "next/link";
-import { handleSocialsignIn } from "@/actions/authActions";
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,12 @@ export function LoginForm({
 					<Button
 						variant="outline"
 						type="button"
-						onClick={() => handleSocialsignIn("google")}
+						onClick={() =>
+							authClient.signIn.social({
+								provider: "google",
+								callbackURL: "/onboarding",
+							})
+						}
 						className="cursor-pointer"
 					>
 						<GoogleLogoIcon size={32} />

@@ -44,7 +44,7 @@ export default function OnboardingView() {
 		defaultValues: {
 			businessName: "",
 			businessAddress: "",
-			businessFieldsArray: [{ label: "", value: "" }],
+			businessFieldsArray: [],
 		},
 	});
 
@@ -202,7 +202,7 @@ export default function OnboardingView() {
 										type="button"
 										variant="outline"
 										// Prevent removing the last field
-										disabled={fields.length === 1}
+
 										onClick={() => remove(index)}
 										className="rounded-sm border border-dotted border-gray-700 text-sm text-gray-500"
 										aria-label={`Remove field ${index + 1}`}
